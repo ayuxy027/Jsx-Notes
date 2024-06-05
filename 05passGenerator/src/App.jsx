@@ -1,13 +1,22 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 
+/**
+ * Main App component for the Password Generator
+ */
 function App() {
-  const [length, setLength] = useState(8);
-  const [ckNumber, setCkNumber] = useState(false);
-  const [charAllowed, setCharAllowed] = useState(false);
-  const [pass, setPass] = useState("");
+  // State hooks to manage the length of the password, inclusion of numbers, special characters, and the generated password
+  const [length, setLength] = useState(8); // useState to manage password length, default is 8
+  const [ckNumber, setCkNumber] = useState(false); // useState to toggle inclusion of numbers
+  const [charAllowed, setCharAllowed] = useState(false); // useState to toggle inclusion of special characters
+  const [pass, setPass] = useState(""); // useState to store the generated password
 
+  // useRef to create a reference to the password input element
   const passRef = useRef(null);
 
+  /**
+   * Function to generate a random password based on the selected options
+   * useCallback to memoize the function and avoid unnecessary re-creations
+   */
   const passGen = useCallback(() => {
     let pass = "";
     let str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -20,6 +29,10 @@ function App() {
     setPass(pass);
   }, [length, ckNumber, charAllowed]);
 
+  /**
+   * Function to copy the generated password to the clipboard
+   * useCallback to memoize the function and avoid unnecessary re-creations
+   */
   const copyPass = useCallback(() => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(pass).then(
@@ -37,6 +50,17 @@ function App() {
     }
   }, [pass]);
 
+  /**
+   * Function to select the text in the password input field
+   * useCallback to memoize the function and avoid unnecessary re-creations
+   */
+  const selectPass = useCallback(() => {
+    if (passRef.current) {
+      passRef.current.select();
+    }
+  }, []);
+
+  // useEffect to generate a new password whenever length, ckNumber, or charAllowed changes
   useEffect(() => {
     passGen();
   }, [length, ckNumber, charAllowed, passGen]);
@@ -53,11 +77,11 @@ function App() {
             placeholder="Password"
             readOnly
             ref={passRef}
-            onClick={copyPass}
+            onClick={selectPass} // Calls selectPass to select the password text when input is clicked
           />
           <button
             className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0"
-            onClick={copyPass}
+            onClick={copyPass} // Calls copyPass to copy the password to clipboard when button is clicked
           >
             Copy
           </button>
@@ -70,7 +94,7 @@ function App() {
               max={20}
               value={length}
               className="cursor-pointer"
-              onChange={(e) => setLength(Number(e.target.value))}
+              onChange={(e) => setLength(Number(e.target.value))} // Updates length state on range input change
             />
             <label>Length: {length}</label>
           </div>
@@ -78,7 +102,7 @@ function App() {
             <input
               type="checkbox"
               checked={ckNumber}
-              onChange={(e) => setCkNumber(e.target.checked)}
+              onChange={(e) => setCkNumber(e.target.checked)} // Updates ckNumber state on checkbox change
             />
             <label>Include Numbers</label>
           </div>
@@ -86,7 +110,7 @@ function App() {
             <input
               type="checkbox"
               checked={charAllowed}
-              onChange={(e) => setCharAllowed(e.target.checked)}
+              onChange={(e) => setCharAllowed(e.target.checked)} // Updates charAllowed state on checkbox change
             />
             <label>Include Special Characters</label>
           </div>
