@@ -1,10 +1,12 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 
 function App() {
   const [length, setLength] = useState(8);
   const [ckNumber, setCkNumber] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [pass, setPass] = useState("");
+
+  const passRef = useRef(null);
 
   const passGen = useCallback(() => {
     let pass = "";
@@ -17,6 +19,23 @@ function App() {
     }
     setPass(pass);
   }, [length, ckNumber, charAllowed]);
+
+  const copyPass = useCallback(() => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(pass).then(
+        () => {
+          alert("Password copied to clipboard!");
+        },
+        (err) => {
+          alert("Failed to copy password: ", err);
+        }
+      );
+    } else if (passRef.current) {
+      passRef.current.select();
+      document.execCommand("copy");
+      alert("Password copied to clipboard!");
+    }
+  }, [pass]);
 
   useEffect(() => {
     passGen();
@@ -33,8 +52,13 @@ function App() {
             className="w-full px-3 py-1 outline-none"
             placeholder="Password"
             readOnly
+            ref={passRef}
+            onClick={copyPass}
           />
-          <button className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
+          <button
+            className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0"
+            onClick={copyPass}
+          >
             Copy
           </button>
         </div>

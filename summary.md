@@ -69,3 +69,13 @@ let object = { name: "John", age: 30 };
      console.log("Component mounted");
    }, []);
    ```
+- ### useRef
+  - used to create a mutable ref object
+  - returns a mutable ref object
+  - example: 
+   ```
+   const ref = useRef(null);
+   ```
+
+      
+
